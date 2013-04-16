@@ -1,1 +1,1 @@
-TwythonService adds another level of abstraction while accessing the Twython Python wrapper for Twitter API.
+Twython Service adds another level of abstraction while accessing the Twython, Python wrapper for Twitter API.
