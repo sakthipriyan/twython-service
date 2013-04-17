@@ -21,7 +21,7 @@ class Tweet(object):
         self.expiry_ts = expiry_ts
     
 class TwythonService(object):
-    def __init__(self, tweet_config = None, connect_time = 15, db_path = None):
+    def __init__(self, tweet_config, connect_time = 15, db_path = None):
         if(not os.path.isfile(tweet_config)):
             raise TwythonServiceError('Invalid twitter config file: ' + tweet_config);
         try:
