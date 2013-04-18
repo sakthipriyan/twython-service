@@ -5,23 +5,15 @@ Created on 16-Apr-2013
 '''
 from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
 from twython import Twython
+from twythonservice.models import Tweet
 import logging
 import urllib2
 import os
 import time
 
-class TwythonServiceError(Exception):
-    pass
-
-class Tweet(object):
-    def __init__(self, tweet, id = 0, image = None, expiry_ts = 0):
-        self.id = id;
-        self.tweet = tweet
-        self.image = image
-        self.expiry_ts = expiry_ts
     
 class TwythonService(object):
-    def __init__(self, tweet_config, connect_time = 15, db_path = None):
+    def __init__(self, tweet_config, db_path, connect_time = 15):
         if(not os.path.isfile(tweet_config)):
             raise TwythonServiceError('Invalid twitter config file: ' + tweet_config);
         try:
@@ -35,12 +27,16 @@ class TwythonService(object):
             self.wait_index = -1
             self.connect_time = connect_time
             self.db_path = db_path
-            self.tweet_queue = Queue()
         except NoSectionError, NoOptionError:
             raise TwythonServiceError('Twitter initialization failed');
             
     def new_tweet(self, text, image_file = None, expiry_time = 0):
-        expiry_ts = (int(time.time()) + 1000 * expiry_time) if expiry_time != 0 else 0
+        '''
+        text is mandatory, image is optional.
+        tweet will expire in 30 if expiry_time is not specified.
+        '''
+        expiry_ts = int(time.time()) 
+        expiry_ts = expiry_ts + expiry_time if expiry_time != 0 else 2592000 
         if(len(text) <= 140):
             enqueue_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             return
