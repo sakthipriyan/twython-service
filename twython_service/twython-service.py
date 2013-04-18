@@ -5,7 +5,7 @@ Created on 16-Apr-2013
 '''
 from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
 from twython import Twython
-from twython_service.models import Tweet
+from twython_service.models import Tweet, TwythonServiceError
 import logging
 import urllib2
 import os
