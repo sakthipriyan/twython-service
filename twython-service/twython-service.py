@@ -40,9 +40,9 @@ class TwythonService(object):
             raise TwythonServiceError('Twitter initialization failed');
             
     def new_tweet(self, text, image_file = None, expiry_time = 0):
-        
+        expiry_ts = (int(time.time()) + 1000 * expiry_time) if expiry_time != 0 else 0
         if(len(text) <= 140):
-            enqueue_tweet(text, image_file, expiry_time)
+            enqueue_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             return
         
         split_array = text.split(' ')
@@ -62,21 +62,22 @@ class TwythonService(object):
             count = count + 1
             tweet = text + str(count) + append_txt
             if(count == 1):
-                enqueue_tweet(Tweet(text, image = image_file, expiry_ts = 0))
+                enqueue_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             else:
-                enqueue_tweet(Tweet(text, expiry_ts = 0))
+                enqueue_tweet(Tweet(text, expiry_ts = expiry_ts))
             
     def wait_for_internet(self):
         connected = False
         while not connected:
             try:
-                urllib2.urlopen('http://www.google.com',timeout = self.connect_time)
+                urllib2.urlopen('http://www.google.com', timeout = self.connect_time)
                 connected = True
             except Exception:
                 self.wait_index = self.wait_index + 1
                 if self.wait_index == len(self.wait_time):
                     self.wait_index = 0
                 time.sleep(self.wait_time[self.wait_index])
+        return connected
                 
     def enqueue_tweet(self, tweet):
         print 'tweet added'
@@ -85,11 +86,13 @@ class TwythonService(object):
         print 'tweet removed'
 
     def process_tweets(self):
-        while True:
-            wait_for_internet()
+        while self.wait_for_internet():
             try:
-                pass
-                #self.twitter.updateStatus(status=text)
+                tweet = self.dequeue_tweet()
+                if tweet.image is None:
+                    self.twitter.updateStatus(status=tweet.tweet)
+                else:
+                    self.twitter.updateStatusWithMedia(tweet.image,status=tweet.tweet)
             except Exception, e:
-                pass
+                self.enqueue_tweet(tweet)
 
