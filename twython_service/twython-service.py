@@ -5,12 +5,13 @@ Created on 16-Apr-2013
 '''
 from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
 from twython import Twython
-from twythonservice.models import Tweet
+from twython_service.models import Tweet
 import logging
 import urllib2
 import os
 import time
-
+from twython_service.database import Database
+import threading
     
 class TwythonService(object):
     def __init__(self, tweet_config, db_path, connect_time = 15):
@@ -26,19 +27,23 @@ class TwythonService(object):
             self.wait_time = (1,2,4,8,16,32,64,128,64,32,16,8,4,2,1)
             self.wait_index = -1
             self.connect_time = connect_time
-            self.db_path = db_path
+            self.database = Database(db_path)
+            self.tweet_ready = threading.Event()
+            self.tweet_ready.set()
         except NoSectionError, NoOptionError:
             raise TwythonServiceError('Twitter initialization failed');
             
     def new_tweet(self, text, image_file = None, expiry_time = 0):
         '''
         text is mandatory, image is optional.
+        If tweet text is longer than 140, it is split into multiple tweets.
         tweet will expire in 30 if expiry_time is not specified.
         '''
         expiry_ts = int(time.time()) 
         expiry_ts = expiry_ts + expiry_time if expiry_time != 0 else 2592000 
-        if(len(text) <= 140):
-            enqueue_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
+        if(len(text) < 140):
+            self.database.insert_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
+            self.tweet_ready.set()
             return
         
         split_array = text.split(' ')
@@ -58,9 +63,12 @@ class TwythonService(object):
             count = count + 1
             tweet = text + str(count) + append_txt
             if(count == 1):
-                enqueue_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
+                tweet = Tweet(text, image = image_file, expiry_ts = expiry_ts)
             else:
-                enqueue_tweet(Tweet(text, expiry_ts = expiry_ts))
+                tweet = Tweet(text, expiry_ts = expiry_ts)
+            self.database.insert_tweet(tweet)
+        self.tweet_ready.set()
+            
             
     def wait_for_internet(self):
         connected = False
@@ -74,21 +82,19 @@ class TwythonService(object):
                     self.wait_index = 0
                 time.sleep(self.wait_time[self.wait_index])
         return connected
-                
-    def enqueue_tweet(self, tweet):
-        print 'tweet added'
-        
-    def dequeue_tweet(self):
-        print 'tweet removed'
 
     def process_tweets(self):
-        while self.wait_for_internet():
-            try:
-                tweet = self.dequeue_tweet()
-                if tweet.image is None:
-                    self.twitter.updateStatus(status=tweet.tweet)
-                else:
-                    self.twitter.updateStatusWithMedia(tweet.image,status=tweet.tweet)
-            except Exception, e:
-                self.enqueue_tweet(tweet)
+        while self.tweet_ready.is_set():
+            self.tweet_ready.clear()
+            while self.wait_for_internet():
+                next_tweet = self.database.select_tweet() 
+                if next_tweet is None: 
+                    break
+                try:
+                    if tweet.image is None:
+                        self.twitter.updateStatus(status=tweet.text)
+                    else:
+                        self.twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
+                except Exception, e:
+                    pass
 
