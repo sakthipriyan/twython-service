@@ -3,15 +3,11 @@ Created on 16-Apr-2013
 
 @author: sakthipriyan
 '''
+import logging, urllib2, os, time, threading
 from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
 from twython import Twython
 from twython_service.models import Tweet, TwythonServiceError
-import logging
-import urllib2
-import os
-import time
 from twython_service.database import Database
-import threading
     
 class TwythonService(object):
     def __init__(self, tweet_config, db_path, connect_time = 15):
@@ -30,6 +26,8 @@ class TwythonService(object):
             self.database = Database(db_path)
             self.tweet_ready = threading.Event()
             self.tweet_ready.set()
+            self.process_thread = threading.Thread(target=self.process_tweets)
+            self.process_thread.start()
         except NoSectionError, NoOptionError:
             raise TwythonServiceError('Twitter initialization failed');
             
