@@ -93,6 +93,7 @@ class TwythonService(object):
                         self.twitter.updateStatus(status=tweet.text)
                     else:
                         self.twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
+                    self.database.update_tweet(tweet)
                 except Exception, e:
-                    pass
+                    time.sleep(10)
 
