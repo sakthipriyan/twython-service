@@ -93,6 +93,7 @@ class TwythonService(object):
                         self.twitter.updateStatus(status=tweet.text)
                     else:
                         self.twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
+                    tweet.expiry_ts = int(time.time())
                     self.database.update_tweet(tweet)
                 except Exception, e:
                     time.sleep(10)
