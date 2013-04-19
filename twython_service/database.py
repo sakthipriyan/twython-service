@@ -71,7 +71,7 @@ class Database(object):
         try:
             connection = sqlite3.connect(self.db_file)
             cursor = connection.cursor()
-            cursor.execute(update_tweet,(tweet.timestamp,tweet.tweet_id))
+            cursor.execute(update_tweet,(tweet.expiry_ts,tweet.tweet_id))
             connection.commit()
         except sqlite3.Error, e:
             logging.error("Error %s:" % e.args[0])
