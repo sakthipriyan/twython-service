@@ -5,7 +5,7 @@ It smoothly works over unstable Internet connection.
 ## Installing Twython service
 `````sh
 # Installing Twython Service
-git clone https://github.com/spriyan/twython-service.git
+git clone git://github.com/spriyan/twython-service.git
 cd twython-service
 sudo python setup.py install
 `````
