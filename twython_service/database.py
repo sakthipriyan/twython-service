@@ -13,6 +13,10 @@ create_tweets_table = '''CREATE TABLE "tweets" (
 "expiry_ts" INTEGER NOT NULL
 );'''
 
+create_tweets_index = '''
+CREATE INDEX "index_expiry_ts" ON "tweets" ("expiry_ts" ASC);
+''' 
+
 insert_tweet = 'INSERT INTO tweets (text, image, expiry_ts) values(?,?,?)'
 select_tweet = 'SELECT * FROM tweets where tweet_id > ? AND expiry_ts > ? ORDER BY tweet_id LIMIT 1'
 update_tweet = 'UPDATE tweets set expiry_ts = ? where tweet_id = ?'
@@ -27,6 +31,7 @@ class Database(object):
                 connection = sqlite3.connect(self.db_file)
                 cursor = connection.cursor()
                 cursor.execute(create_tweets_table)
+                cursor.execute(create_tweets_index)
             except sqlite3.Error, e:
                 logging.error("Error %s:" % e.args[0])
             finally:

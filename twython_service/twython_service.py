@@ -13,7 +13,7 @@ class TwythonService(object):
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
         logging.debug('Twython Service: Initializing Twython Service')
         if(not os.path.isfile(tweet_config)):
-            error_msg = 'Twython Service: Invalid __twitter config file: ' + tweet_config
+            error_msg = 'Twython Service: Invalid twitter config file: ' + tweet_config
             logging.error(error_msg)
             raise TwythonServiceError(error_msg);
         try:
@@ -92,7 +92,6 @@ class TwythonService(object):
                 if self.__wait_index == len(self.__wait_time):
                     self.__wait_index = 0
                 time.sleep(self.__wait_time[self.__wait_index])
-        logging.debug('Twython Service: Internet available now')
         return connected
 
     def __process_tweets(self):
