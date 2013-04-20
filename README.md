@@ -18,4 +18,22 @@ twython_service.new_tweet(text=tweet_text, image_file = image_to_attach, expiry_
 # To terminate the service
 twython_service.terminate()
 
+# This file contains example for Twython service usage
+
+# Initializing the TwythonService object
+twython_service = TwythonService('/path/to/config/file','/path/to/database/file')
+
+# Example of sending tweet
+twython_service.new_tweet(text = 'Your tweet goes in here')
+
+# Example of sending the tweet within specified time. Defaults to 30 days.
+twython_service.new_tweet(text = 'Your tweet goes in here', expires_in=300)
+
+# Example of sending the tweet with image 
+twython_service.new_tweet(text = 'Your tweet goes in here', image_file='/path/to/image/file')
+
+# Terminate the Twython Service 
+twython_service.terminate()
+
+
 `````
