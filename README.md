@@ -3,7 +3,7 @@ Twython Service adds another level of abstraction while posting tweets via Twyth
 It smoothly works over unstable Internet connection.  
 
 ## Installing Twython service
-`````shell
+`````sh
 # Installing Twython Service
 git clone https://github.com/spriyan/twython-service.git
 cd twython-service
