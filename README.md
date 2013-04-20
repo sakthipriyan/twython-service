@@ -1,14 +1,14 @@
 Twython Service
-===============
+---------------
 Twython Service adds another level of abstraction while posting tweets via Twython.
 It smoothly works over unstable Internet connection.  
 
 ## Installing Twython service
 `````shell
+# Installing Twtyhon Service
 git clone https://github.com/spriyan/twython-service.git
 cd twython-service
 sudo python setup.py install
-
 `````
 
 ## Using Twython Service in code
@@ -28,5 +28,4 @@ twython_service.new_tweet(text = 'Your tweet goes in here', image_file='/path/to
 
 # Terminate the Twython Service 
 twython_service.terminate()
-
 `````
