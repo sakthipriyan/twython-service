@@ -1,6 +1,7 @@
 Twython Service
 ===============
 Twython Service adds another level of abstraction while posting tweets via Twython.
+It smoothly works across unstable Internet connection.  
 
 ## Using Twython Service in code
 
