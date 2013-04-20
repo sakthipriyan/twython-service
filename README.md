@@ -10,7 +10,7 @@ cd twython-service
 sudo python setup.py install
 `````
 
-## Using Twython Service in code
+## Using Twython Service
 `````python
 # Initializing the TwythonService object
 twython_service = TwythonService('/path/to/config/file','/path/to/database/file')
