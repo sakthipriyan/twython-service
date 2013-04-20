@@ -26,19 +26,18 @@ class TwythonService(object):
             self.database = Database(db_path)
             self.tweet_ready = threading.Event()
             self.tweet_ready.set()
-            self.process_thread = threading.Thread(target=self.process_tweets)
+            self.process_thread = threading.Thread(target=self.__process_tweets)
             self.process_thread.start()
         except NoSectionError, NoOptionError:
             raise TwythonServiceError('Twitter initialization failed');
             
-    def new_tweet(self, text, image_file = None, expiry_time = 0):
+    def new_tweet(self, text, image_file = None, expiry_time = 2592000):
         '''
         text is mandatory, image is optional.
         If tweet text is longer than 140, it is split into multiple tweets.
         tweet will expire in 30 if expiry_time is not specified.
         '''
-        expiry_ts = int(time.time()) 
-        expiry_ts = expiry_ts + expiry_time if expiry_time != 0 else 2592000 
+        expiry_ts = int(time.time()) + expiry_time 
         if(len(text) < 140):
             self.database.insert_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             self.tweet_ready.set()
@@ -66,9 +65,8 @@ class TwythonService(object):
                 tweet = Tweet(text, expiry_ts = expiry_ts)
             self.database.insert_tweet(tweet)
         self.tweet_ready.set()
-            
-            
-    def wait_for_internet(self):
+
+    def __wait_for_internet(self):
         connected = False
         while not connected:
             try:
@@ -81,10 +79,10 @@ class TwythonService(object):
                 time.sleep(self.wait_time[self.wait_index])
         return connected
 
-    def process_tweets(self):
+    def __process_tweets(self):
         while self.tweet_ready.is_set():
             self.tweet_ready.clear()
-            while self.wait_for_internet():
+            while self.__wait_for_internet():
                 next_tweet = self.database.select_tweet() 
                 if next_tweet is None: 
                     break
