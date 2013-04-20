@@ -13,3 +13,7 @@ class Tweet(object):
         self.text = text
         self.image = image
         self.expiry_ts = expiry_ts
+    
+    def __str__(self):
+        return 'Tweet[tweet_id=' + str(self.tweet_id) + ',text=' + str(self.text) + ',image=' + str(self.image) + ',expiry_ts=' + str(self.expiry_ts) + ']'
+
