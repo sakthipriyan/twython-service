@@ -2,7 +2,7 @@ Twython Service
 ===============
 Twython Service adds another level of abstraction while posting tweets via Twython.
 
-# Using Twython Service in code
+## Using Twython Service in code
 `````python
 # To initialize the TwythonService object
 #tweet_config = path to tweet config file
