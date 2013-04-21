@@ -98,30 +98,34 @@ class TwythonService(object):
 
     def __process_tweets(self):
         logging.debug('Twython Service: Processor thread to process tweets initialized')
-        self.__database.delete_tweets()
-        while self.__tweet_ready.wait() and self.__is_alive:
-            logging.debug('Twython Service: Processing tweets')
-            self.__tweet_ready.clear()
-            tweet_id = 0
-            while self.__wait_for_internet():
-                logging.debug('Twython Service: Internet available')
-                tweet = self.__database.select_tweet(tweet_id) 
-                if tweet is None:
-                    logging.debug('Twython Service: No tweets to post')
-                    break
-                logging.debug('Twython Service: Sending tweet ' + str(tweet))
-                try:
-                    if tweet.image is None:
-                        self.__twitter.updateStatus(status=tweet.text)
-                        logging.debug('Twython Service: Tweet send')
-                    else:
-                        self.__twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
-                        logging.debug('Twython Service: Tweet send with an image')
-                    tweet.expiry_ts = int(time.time())
-                    self.__database.update_tweet(tweet)
-                except Exception, e:
-                    tweet_id = tweet.tweet_id
-                    logging.error('Twython Service: ' + str(e))
-                    time.sleep(10)
+        try:
+            
+            self.__database.delete_tweets()
+            while self.__tweet_ready.wait() and self.__is_alive:
+                logging.debug('Twython Service: Processing tweets')
+                self.__tweet_ready.clear()
+                tweet_id = 0
+                while self.__wait_for_internet():
+                    logging.debug('Twython Service: Internet available')
+                    tweet = self.__database.select_tweet(tweet_id) 
+                    if tweet is None:
+                        logging.debug('Twython Service: No tweets to post')
+                        break
+                    logging.debug('Twython Service: Sending tweet ' + str(tweet))
+                    try:
+                        if tweet.image is None:
+                            self.__twitter.updateStatus(status=tweet.text)
+                            logging.debug('Twython Service: Tweet send')
+                        else:
+                            self.__twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
+                            logging.debug('Twython Service: Tweet send with an image')
+                        tweet.expiry_ts = int(time.time())
+                        self.__database.update_tweet(tweet)
+                    except Exception, e:
+                        tweet_id = tweet.tweet_id
+                        logging.error('Twython Service: ' + str(e))
+                        time.sleep(10)
+        except Exception, e:
+            logging.debug(str(e))
         logging.debug('Twython Service: Exiting processor thread')
 
