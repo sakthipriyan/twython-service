@@ -104,6 +104,7 @@ class TwythonService(object):
             self.__tweet_ready.clear()
             tweet_id = 0
             while self.__wait_for_internet():
+                logging.debug('Twython Service: Internet available')
                 tweet = self.__database.select_tweet(tweet_id) 
                 if tweet is None:
                     logging.debug('Twython Service: No tweets to post')
@@ -123,3 +124,4 @@ class TwythonService(object):
                     logging.error('Twython Service: ' + str(e))
                     time.sleep(10)
         logging.debug('Twython Service: Exiting processor thread')
+
