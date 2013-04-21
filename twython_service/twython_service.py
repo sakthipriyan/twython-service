@@ -23,7 +23,7 @@ class TwythonService(object):
                                    twitter_secret = config.get('TweetAuth','twitter_secret'),
                                    oauth_token = config.get('TweetAuth','oauth_token'),
                                    oauth_token_secret = config.get('TweetAuth','oauth_token_secret'))
-            logging.debug('Twython Service: Loaded __twitter configuration')    
+            logging.debug('Twython Service: Loaded twitter configuration')    
             self.__wait_time = (1,2,4,8,16,32,64,128,64,32,16,8,4,2,1)
             self.__wait_index = -1
             self.__connect_time = connect_time
@@ -48,7 +48,7 @@ class TwythonService(object):
             raise TwythonServiceError('Twython Service: Processor thread is terminated')
         expiry_ts = int(time.time()) + expires_in 
         if(len(text) < 140):
-            logging.debug('Twython Service: Tweet is smaller than 140 characters')
+            logging.debug('Twython Service: Tweet < 140: '+ text)
             self.__database.insert_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             self.__tweet_ready.set()
             return
@@ -64,16 +64,17 @@ class TwythonService(object):
                 output = text + ' '
         output_array.append(output)
         no_of_tweets = str(len(output_array))
-        logging.debug('Twython Service: No of split up tweets '+ no_of_tweets)
+        logging.debug('Twython Service: Number of split up tweets '+ no_of_tweets)
         append_txt = '/' + no_of_tweets
         count = 0
         for text in output_array:
             count = count + 1
-            tweet = text + str(count) + append_txt
+            tweet_txt = text + str(count) + append_txt
+            logging.debug('Twython Service: Tweet > 140: '+ text)
             if(count == 1):
-                tweet = Tweet(text, image = image_file, expiry_ts = expiry_ts)
+                tweet = Tweet(tweet_txt, image = image_file, expiry_ts = expiry_ts)
             else:
-                tweet = Tweet(text, expiry_ts = expiry_ts)
+                tweet = Tweet(tweet_txt, expiry_ts = expiry_ts)
             self.__database.insert_tweet(tweet)
         self.__tweet_ready.set()
 
@@ -91,7 +92,9 @@ class TwythonService(object):
                 self.__wait_index = self.__wait_index + 1
                 if self.__wait_index == len(self.__wait_time):
                     self.__wait_index = 0
-                time.sleep(self.__wait_time[self.__wait_index])
+                sleep_time = self.__wait_time[self.__wait_index]
+                logging.debug('No Internet: Sleeping for ' + str(sleep_time) + 's')
+                time.sleep(sleep_time)
         return connected
 
     def __process_tweets(self):
@@ -120,4 +123,4 @@ class TwythonService(object):
                     tweet_id = tweet.tweet_id
                     logging.error('Twython Service: ' + str(e))
                     time.sleep(10)
-
+        logging.debug('Twython Service: Exiting processor thread')
