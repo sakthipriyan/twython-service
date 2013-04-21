@@ -10,7 +10,6 @@ from database import Database
 
 class TwythonService(object):
     def __init__(self, tweet_config, db_path, connect_time = 10):
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
         logging.debug('Twython Service: Initializing Twython Service')
         if(not os.path.isfile(tweet_config)):
             error_msg = 'Twython Service: Invalid twitter config file: ' + tweet_config
