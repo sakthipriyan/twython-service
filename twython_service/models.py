@@ -15,5 +15,5 @@ class Tweet(object):
         self.expiry_ts = expiry_ts
     
     def __str__(self):
-        return 'Tweet[tweet_id=' + str(self.tweet_id) + ',text=' + str(self.text) + ',image=' + str(self.image) + ',expiry_ts=' + str(self.expiry_ts) + ']'
+        return u'Tweet[tweet_id=' + str(self.tweet_id) + ',text=' + str(self.text) + ',image=' + str(self.image) + ',expiry_ts=' + str(self.expiry_ts) + ']'
 

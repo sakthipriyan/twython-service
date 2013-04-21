@@ -47,7 +47,7 @@ class TwythonService(object):
             raise TwythonServiceError('Twython Service: Processor thread is terminated')
         expiry_ts = int(time.time()) + expires_in 
         if(len(text) < 140):
-            logging.debug('Twython Service: Tweet < 140: '+ text)
+            logging.debug(u'Twython Service: Tweet < 140: '+ text)
             self.__database.insert_tweet(Tweet(text, image = image_file, expiry_ts = expiry_ts))
             self.__tweet_ready.set()
             return
@@ -69,7 +69,7 @@ class TwythonService(object):
         for text in output_array:
             count = count + 1
             tweet_txt = text + str(count) + append_txt
-            logging.debug('Twython Service: Tweet > 140: '+ text)
+            logging.debug(u'Twython Service: Tweet > 140: '+ text)
             if(count == 1):
                 tweet = Tweet(tweet_txt, image = image_file, expiry_ts = expiry_ts)
             else:
@@ -111,7 +111,7 @@ class TwythonService(object):
                     if tweet is None:
                         logging.debug('Twython Service: No tweets to post')
                         break
-                    logging.debug('Twython Service: Sending tweet ' + str(tweet))
+                    logging.debug(u'Twython Service: Sending tweet ' + str(tweet))
                     try:
                         if tweet.image is None:
                             self.__twitter.updateStatus(status=tweet.text)
