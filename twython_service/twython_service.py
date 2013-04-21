@@ -99,7 +99,6 @@ class TwythonService(object):
     def __process_tweets(self):
         logging.debug('Twython Service: Processor thread to process tweets initialized')
         try:
-            
             self.__database.delete_tweets()
             while self.__tweet_ready.wait() and self.__is_alive:
                 logging.debug('Twython Service: Processing tweets')
@@ -129,4 +128,3 @@ class TwythonService(object):
         except Exception, e:
             logging.debug(str(e))
         logging.debug('Twython Service: Exiting processor thread')
-
