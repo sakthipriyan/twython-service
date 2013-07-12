@@ -18,10 +18,10 @@ class TwythonService(object):
         try:
             config = RawConfigParser()
             config.read(tweet_config)
-            self.__twitter = Twython(twitter_token = config.get('TweetAuth','twitter_token'),
-                                   twitter_secret = config.get('TweetAuth','twitter_secret'),
-                                   oauth_token = config.get('TweetAuth','oauth_token'),
-                                   oauth_token_secret = config.get('TweetAuth','oauth_token_secret'))
+            self.__twitter = Twython(config.get('TweetAuth','twitter_token'),
+                                   config.get('TweetAuth','twitter_secret'),
+                                   config.get('TweetAuth','oauth_token'),
+                                   config.get('TweetAuth','oauth_token_secret'))
             logging.debug('Twython Service: Loaded twitter configuration')    
             self.__wait_time = (1,2,4,8,16,32,64,128,64,32,16,8,4,2,1)
             self.__wait_index = -1
@@ -114,10 +114,10 @@ class TwythonService(object):
                     logging.debug('Twython Service: Sending tweet ')
                     try:
                         if tweet.image is None:
-                            self.__twitter.updateStatus(status=tweet.text)
+                            self.__twitter.update_status(status=tweet.text)
                             logging.debug('Twython Service: Tweet send')
                         else:
-                            self.__twitter.updateStatusWithMedia(tweet.image,status=tweet.text)
+                            self.__twitter.update_status_with_media(media=tweet.image,status=tweet.text)
                             logging.debug('Twython Service: Tweet send with an image')
                         tweet.expiry_ts = int(time.time())
                         self.__database.update_tweet(tweet)
